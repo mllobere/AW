@@ -65,10 +65,8 @@ class AWController extends Controller
 
 public function showAwAction(Request $request) {
 
-  $aw = new aw();
-
   $formSearch = $this->container->get('form.factory')->create(new AwForm());
-  $formCreate = $this->createForm(new CreateAwForm($aw));
+  $formCreate = $this->createForm(new CreateAwForm());
 
   $formCreate->handleRequest($request);
 
@@ -77,7 +75,6 @@ public function showAwAction(Request $request) {
       $em = $this->getDoctrine()->getManager();
       $em->persist($aw);
       $em->flush();
-      
       //TODO:FIX THE REDIRECT URL
   }
 
