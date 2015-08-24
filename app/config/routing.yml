@@ -1,0 +1,32 @@
+aw:
+    resource: "@AWBundle/Resources/config/routing.php"
+    prefix:   /
+
+app:
+    resource: @AppBundle/Controller/
+    type:     annotation
+
+_welcome:
+    pattern:  /
+    defaults: { _controller: AppBundle:Default:index }
+
+searchAW:
+  pattern: /formSearch
+  defaults: { _controller: AWBundle:AW:searchAW }
+  requirements:
+    _method: POST
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+fos_user_security_login:
+  pattern:  /login
+  defaults: { _controller: FOSUserBundle:Security:login }
+
+fos_user_security_check:
+  pattern:  /login_check
+  defaults: { _controller: FOSUserBundle:Security:check }
+
+fos_user_security_logout:
+  pattern:  /logout
+  defaults: { _controller: FOSUserBundle:Security:logout }
