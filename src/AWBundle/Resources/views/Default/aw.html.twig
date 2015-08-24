@@ -1,0 +1,48 @@
+{# src/AWBundle/Resources/views/Default/aw.html.twig #}
+{% extends 'AWBundle:Default:base.html.twig' %}
+
+
+{% block create %}
+		{{ form_widget(formCreate) }}
+{% endblock %}
+
+{% block header %}
+<form id="form_search" action="{{ path('searchAW') }}" method="post">
+	{{ form_widget(formSearch) }}
+	<input type="submit" value="GO" />
+</form>
+{% endblock %}
+
+
+{% block list %}
+<div class="loading"><h3>LOADING</h3></div>
+<div id="resultats_recherche">
+  {% include 'AWBundle:Default:listAw.html.twig' with {'aw' : aw}  %}
+</div>
+
+<script>
+$(".loading").hide();
+
+$('#awSearch_motcle').bind('input', function(){
+	$(".loading").show();
+	var motcle = $("#awSearch_motcle").val();
+	var DATA = 'motcle=' + motcle;
+	$.ajax({
+			type: "POST",
+			url: "{{ path('searchAW')}}",
+			data: DATA,
+			dataType: 'text',
+			cache: false,
+			success: function(data){
+				 $('#resultats_recherche').html(data);
+				 $(".loading").hide();
+			},
+			error: function(errorThrown) {
+				 alert("error" + errorThrown.toString());
+			}
+	});
+	return false;
+});
+</script>
+
+{% endblock %}

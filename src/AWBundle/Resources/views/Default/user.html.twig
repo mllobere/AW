@@ -1,0 +1,8 @@
+
+<h2> SHOW USER </h2>
+
+{% for item in word %}
+{{ item.id }} -> {{ item.firstname }} : {{ item.lastname }} : {{ item.gender }} <BR>
+{% else %}
+<h2>Aoutch ! No data !</h2>
+{% endfor %}

@@ -1,0 +1,13 @@
+
+<table>
+{% for a in aw %}
+  <tr>
+    <td>{{ a.name }}</td>
+    <td>{{ a.place }}</td>
+    <td>{{ a.date|date('d/m/Y') }}</td>
+{% else %}
+  <tr>
+    <td>Aucun AW n'a été trouvé.</td>
+  </tr>
+{% endfor %}
+</table>
