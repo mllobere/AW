@@ -1,7 +1,64 @@
-#header {
 
-  background-color: red;
-  width:100%;
+body{
+  background-color:black;
+  font-size: large;
+  color: white;
+
+}
+#header{
+  background-color: lightskyblue;
+  border: 2px solid black;
+  width:90%;
   height:100px;
+}
 
+.in_motclé{
+  width:50%;
+  color:black;
+}
+
+#awSearch_motcle{
+  width:50%;
+  }
+
+#list{
+  background-color: red;
+  border: 2px solid black;
+  width:80%;
+  color:black;
+}
+
+
+#form_search{
+  background-color: yellow;
+  width:75%;
+  border: 2px solid black;
+}
+
+#awSearch{
+  margin-left:10%;
+  background-color: orange;
+  border: 2px solid black;
+  color:black;
+  width:50%;
+}
+
+#create{
+  margin-left:10%;
+  background-color: pink;
+  border: 2px solid black;
+  font-size: medium;
+  color:black;
+}
+
+#list{
+  margin-left:5%;
+  font-size: large;
+}
+
+#resultats_recherche{
+  margin-left:5%;
+  background-color: green;
+  border: 2px solid black;
+  font-size: small;
 }
