@@ -1,0 +1,26 @@
+{# src/AWBundle/Resources/views/Default/detailAW.html.twig #}
+{% extends 'AWBundle:Default:base.html.twig' %}
+
+{% block content %}
+
+{% for awa in aw %}
+  <div id="aw_detaild">
+      {{awa.aw_aw_title}}
+      {{awa.aw_aw_date | date}}
+  </div>
+
+
+{% endfor %}
+
+ LIST OF PEOPLE INVITED :
+{% for awb in aw2 %}
+
+<div id="aw_invite">
+    {{awb.user_username}}
+    {{awb.user_email}}
+</div>
+
+{% endfor %}
+ INVITE PEOPLE BY EMAIL :
+{{form(formInvite)}}
+ {% endblock %}

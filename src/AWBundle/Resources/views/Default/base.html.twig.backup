@@ -24,7 +24,6 @@
 {% else %}
 <h2>Aoutch ! No data !</h2>
 {% endfor %}
-<a> I am the king of the web design, am I not ? </a>
 
 {% endblock %}
 

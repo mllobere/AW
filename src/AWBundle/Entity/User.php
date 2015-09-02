@@ -15,8 +15,8 @@ class User extends BaseUser
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\OneToMany(targetEntity="aw", mappedBy="idUser")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\OneToOne(targetEntity="AWBundle\Entity\awuser" , inversedBy="user_id")
      */
     protected $id;
 
@@ -29,7 +29,7 @@ class User extends BaseUser
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {

@@ -19,26 +19,38 @@ class awuser
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="integer")
+     * @ORM\OneToOne(targetEntity="AWBundle\Entity\aw" , mappedBy="Id")
      */
-    protected $firstname;
+    protected $aw_id;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="integer")
+     * @ORM\OneToOne(targetEntity="AWBundle\Entity\User" , mappedBy="Id")
      */
-    protected $lastname;
+    protected $user_id;
+
+     /**
+      * @ORM\Column(type="integer")
+      */
+    protected $awuser_invitedby;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="integer")
      */
-    protected $gender;
+    protected $awuser_answer;
 
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $awuser_answercomment;
 
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -46,71 +58,117 @@ class awuser
     }
 
     /**
-     * Set firstname
+     * Set aw_id
      *
-     * @param string $firstname
+     * @param integer $awId
      * @return awuser
      */
-    public function setFirstname($firstname)
+    public function setAwId($awId)
     {
-        $this->firstname = $firstname;
+        $this->aw_id = $awId;
 
         return $this;
     }
 
     /**
-     * Get firstname
+     * Get aw_id
      *
-     * @return string 
+     * @return integer
      */
-    public function getFirstname()
+    public function getAwId()
     {
-        return $this->firstname;
+        return $this->aw_id;
     }
 
     /**
-     * Set lastname
+     * Set user_id
      *
-     * @param string $lastname
+     * @param integer $userId
      * @return awuser
      */
-    public function setLastname($lastname)
+    public function setUserId($userId)
     {
-        $this->lastname = $lastname;
+        $this->user_id = $userId;
 
         return $this;
     }
 
     /**
-     * Get lastname
+     * Get user_id
      *
-     * @return string 
+     * @return integer
      */
-    public function getLastname()
+    public function getUserId()
     {
-        return $this->lastname;
+        return $this->user_id;
     }
 
     /**
-     * Set gender
+     * Set awuser_invitedby
      *
-     * @param string $gender
+     * @param integer $awuserInvitedby
      * @return awuser
      */
-    public function setGender($gender)
+    public function setAwuserInvitedby($awuserInvitedby)
     {
-        $this->gender = $gender;
+        $this->awuser_invitedby = $awuserInvitedby;
 
         return $this;
     }
 
     /**
-     * Get gender
+     * Get awuser_invitedby
      *
-     * @return string 
+     * @return integer
      */
-    public function getGender()
+    public function getAwuserInvitedby()
     {
-        return $this->gender;
+        return $this->awuser_invitedby;
+    }
+
+    /**
+     * Set awuser_answer
+     *
+     * @param integer $awuserAnswer
+     * @return awuser
+     */
+    public function setAwuserAnswer($awuserAnswer)
+    {
+        $this->awuser_answer = $awuserAnswer;
+
+        return $this;
+    }
+
+    /**
+     * Get awuser_answer
+     *
+     * @return integer
+     */
+    public function getAwuserAnswer()
+    {
+        return $this->awuser_answer;
+    }
+
+    /**
+     * Set awuser_answercomment
+     *
+     * @param string $awuserAnswercomment
+     * @return awuser
+     */
+    public function setAwuserAnswercomment($awuserAnswercomment)
+    {
+        $this->awuser_answercomment = $awuserAnswercomment;
+
+        return $this;
+    }
+
+    /**
+     * Get awuser_answercomment
+     *
+     * @return string
+     */
+    public function getAwuserAnswercomment()
+    {
+        return $this->awuser_answercomment;
     }
 }

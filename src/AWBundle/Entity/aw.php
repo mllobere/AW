@@ -14,30 +14,35 @@ class aw
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\OneToOne(targetEntity="AWBundle\Entity\awuser" , inversedBy="aw_id")
      */
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="boolean", nullable=false)
      */
-    protected $name;
+    protected $aw_visibility;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="boolean", nullable=false)
      */
-    protected $place;
+    protected $aw_status;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=false)
      */
-    protected $date;
+    protected $aw_date;
 
     /**
-     * @ORM\Column(type="integer")
-     * @ORM\OneToOne(targetEntity="User", mappedBy="id")
+     * @ORM\Column(type="string", length=100, nullable=false)
      */
-    protected $idUser;
+    protected $aw_title;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $aw_ad;
+
 
     /**
      * Get id
@@ -50,94 +55,130 @@ class aw
     }
 
     /**
-     * Set name
+     * Set aw_visibility
      *
-     * @param string $name
+     * @param boolean $awVisibility
      * @return aw
      */
-    public function setName($name)
+    public function setAwVisibility($awVisibility)
     {
-        $this->name = $name;
+        $this->aw_visibility = $awVisibility;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get aw_visibility
      *
-     * @return string
+     * @return boolean
      */
-    public function getName()
+    public function getAwVisibility()
     {
-        return $this->name;
+        return $this->aw_visibility;
     }
 
     /**
-     * Set place
+     * Set aw_status
      *
-     * @param string $place
+     * @param boolean $awStatus
      * @return aw
      */
-    public function setPlace($place)
+    public function setAwStatus($awStatus)
     {
-        $this->place = $place;
+        $this->aw_status = $awStatus;
 
         return $this;
     }
 
     /**
-     * Get place
+     * Get aw_status
      *
-     * @return string
+     * @return boolean
      */
-    public function getPlace()
+    public function getAwStatus()
     {
-        return $this->place;
+        return $this->aw_status;
     }
 
     /**
-     * Set date
+     * Set aw_date
      *
-     * @param \DateTime $date
+     * @param \DateTime $awDate
      * @return aw
      */
-    public function setDate($date)
+    public function setAwDate($awDate)
     {
-        $this->date = $date;
+        $this->aw_date = $awDate;
 
         return $this;
     }
 
     /**
-     * Get date
+     * Get aw_date
      *
      * @return \DateTime
      */
-    public function getDate()
+    public function getAwDate()
     {
-        return $this->date;
+        return $this->aw_date;
     }
 
     /**
-     * Set idUser
+     * Set aw_title
      *
-     * @param integer $idUser
+     * @param string $awTitle
      * @return aw
      */
-    public function setIdUser($idUser)
+    public function setAwTitle($awTitle)
     {
-        $this->idUser = $idUser;
+        $this->aw_title = $awTitle;
 
         return $this;
     }
 
     /**
-     * Get idUser
+     * Get aw_title
      *
-     * @return integer 
+     * @return string
      */
-    public function getIdUser()
+    public function getAwTitle()
     {
-        return $this->idUser;
+        return $this->aw_title;
+    }
+
+    /**
+     * Set aw_ad
+     *
+     * @param string $awAd
+     * @return aw
+     */
+    public function setAwAd($awAd)
+    {
+        $this->aw_ad = $awAd;
+
+        return $this;
+    }
+
+    /**
+     * Get aw_ad
+     *
+     * @return string
+     */
+    public function getAwAd()
+    {
+        return $this->aw_ad;
+    }
+
+    /**
+     * Set id
+     *
+     * @param integer $id
+     * @return aw
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 }

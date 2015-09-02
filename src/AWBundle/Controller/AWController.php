@@ -2,12 +2,17 @@
 
 namespace AWBundle\Controller;
 
-use AWBundle\Resources\Form\AwForm;
-use AWBundle\Resources\Form\CreateAwForm;
+use AWBundle\Form\AwForm;
+use AWBundle\Form\awType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use AWBundle\Entity\awuser;
 use AWBundle\Entity\aw;
+
+define("RESPONSE_NO",  0);
+define("RESPONSE_YES",  1);
+define("RESPONSE_MAYBE",  2);
+define("RESPONSE_WAITING",  3);
 
 
 class AWController extends Controller
@@ -17,6 +22,100 @@ class AWController extends Controller
 
     return $this->render('AWBundle:Default:sucess.html.twig');
 
+  }
+
+  public function detailAwAction($id, Request $request)
+  {
+    $form = $this->createFormBuilder()
+                  ->add('email', 'text')
+                  ->add('send invit', 'submit')
+                  ->getForm();
+
+    $form->handleRequest($request);
+
+    if ($form->isValid()) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        // We first get the Id of the user
+        $userManager = $this->get('fos_user.user_manager');
+        $user = $userManager->createUser();
+        $user = $userManager->findUserBy(array('email' => $form->get('email')->getData()));
+
+        /*$logger = $this->get('logger');
+        $logger->debug('logger user');
+        $logger->debug(print_r($user->getId(), true)); */
+
+        //TODO: check if email exists in the DB -> $user is not null
+        if($user->getId()) {
+          // Current logged user
+          $userCurrent = $this->container->get('security.context')->getToken()->getUser();
+
+          //We have found the user
+          $awuser = new awuser();
+          $awuser->setUserId($user->getId());
+          $awuser->setAwId($id);
+          $awuser->setAwuserAnswer(RESPONSE_WAITING);
+          $awuser->setAwuserInvitedby($userCurrent->getId());
+
+          // Save in DB
+          $em->persist($awuser);
+          $em->flush();
+        }
+        else {
+          // TODO: display error
+          //return $this->redirect($this->generateUrl('show_aw'));
+        }
+
+    }
+
+    $em = $this->container->get('doctrine')->getManager();
+
+    $qb = $em->createQueryBuilder();
+
+    // THIS IS WORKING FROM HERE ...
+    /*$qb = $em->createQuery(
+                'SELECT a, c FROM AWBundle:awuser a
+                JOIN AWBundle:aw c
+                WITH a.aw_id = c.id');
+
+     $aw = $qb->getResult(\Doctrine\ORM\Query::HYDRATE_SCALAR); */
+     /*  WHERE p.id = :id'
+     )->setParameter('id', $id); */
+    // .... TO HERE
+
+    //TODO: We are doing 2 queries here, not sure how to merge that in one
+     $qb->select('awuser')
+         ->from('AWBundle:awuser', 'awuser')
+         ->leftJoin('AWBundle:aw', 'aw')
+         ->where('aw.id = awuser.aw_id')
+         ->andWhere('awuser.aw_id = :motcle')
+         ->setParameter('motcle', $id)
+         ->addSelect('aw');
+
+     $query = $qb->getQuery();
+     $aw = $query->getResult(\Doctrine\ORM\Query::HYDRATE_SCALAR);
+
+     $qb2 = $em->createQueryBuilder();
+
+     $qb2->select('awuser')
+         ->from('AWBundle:awuser', 'awuser')
+         ->leftJoin('AWBundle:User', 'user')
+         ->where('user.id = awuser.user_id ')
+         ->andWhere('awuser.aw_id = :motcle')
+         ->setParameter('motcle', $id)
+         ->addSelect('user');
+
+    $query = $qb2->getQuery();
+    $aw2 = $query->getResult(\Doctrine\ORM\Query::HYDRATE_SCALAR);
+
+    /*$logger = $this->get('logger');
+    $logger->debug('logger db');
+    $logger->debug(print_r($aw, true));*/
+
+    return $this->container->get('templating')->renderResponse('AWBundle:Default:detailAw.html.twig', array(
+        'aw' => $aw, 'aw2' => $aw2,'formInvite' => $form->createView()
+        ));
   }
 
   public function searchAWAction()
@@ -42,8 +141,8 @@ class AWController extends Controller
 
                  $qb->select('a')
                     ->from('AWBundle:aw', 'a')
-                    ->where("a.place LIKE :motcle")
-                    ->orderBy('a.place', 'ASC')
+                    ->where("a.aw_title LIKE :motcle")
+                    ->orderBy('a.aw_title', 'ASC')
                     ->setParameter('motcle', '%'.$motcle.'%');
 
                  $query = $qb->getQuery();
@@ -66,142 +165,40 @@ class AWController extends Controller
 public function showAwAction(Request $request) {
 
   $formSearch = $this->container->get('form.factory')->create(new AwForm());
-  $formCreate = $this->createForm(new CreateAwForm());
 
-  $formCreate->handleRequest($request);
+  $awNew = new aw();
+  $awNew->setAwDate(new \DateTime('tomorrow'));
 
-  if ($formCreate->isValid()) {
+  /*$form = $this->createFormBuilder($awNew)
+                ->add('aw_visibility', 'checkbox')
+                ->add('aw_status', 'checkbox')
+                ->add('aw_date', 'date')
+                ->add('aw_title', 'text')
+                ->add('aw_ad', 'checkbox')
+                ->add('awSave', 'submit')
+                ->getForm(); */
+
+  $form = $this->createForm(new awType(), $awNew);
+
+  $form->handleRequest($request);
+
+  if ($form->isValid()) {
       // Save in DB
       $em = $this->getDoctrine()->getManager();
-      $em->persist($aw);
+      //$awNew = $form->getData();
+      $em->persist($awNew);
       $em->flush();
-      //TODO:FIX THE REDIRECT URL
+      //return $this->redirect($this->generateUrl('show_aw'));
   }
-
 
   $em = $this->container->get('doctrine')->getManager();
 
   $aw = $em->getRepository('AWBundle:aw')->findAll();
 
   return $this->container->get('templating')->renderResponse('AWBundle:Default:aw.html.twig', array(
-    'aw' => $aw,  'formSearch' => $formSearch->createView(), 'formCreate' => $formCreate->createView()  ));
+    'aw' => $aw,  'formSearch' => $formSearch->createView(), 'formCreate' => $form->createView()  ));
 
 }
-
-  public function showAwAction2(Request $request) {
-
-    //$formSearch = $this->container->get('form.factory')->create(new AwForm());
-    $formSearch = $this->createForm(new AwForm());
-
-    /*$form2 = $this->createFormBuilder()
-        ->add('placeSearch', 'text')
-        ->add('dateSearch', 'date')
-        ->add('search', 'submit')
-        ->getForm();
-
-    $form2->handleRequest($request); */
-
-    /*$repository = $this->getDoctrine()->getRepository('AWBundle:aw');
-    $query = $repository->createQueryBuilder('p')
-                   ->where('p.place LIKE :place')
-                   ->setParameter('place', '%'.$form2->get('placeSearch')->getData().'%')
-                   ->getQuery();
-    $awAll = $query->getResult();
-
-    if (!$awAll) {
-        //throw $this->createNotFoundException(
-        //    'No AW found'
-        //);
-    } */
-
-    $aw = new aw();
-    $aw->setName('AwName');
-    $aw->setPlace('AwPlace');
-    $aw->setDate(new \DateTime('tomorrow'));
-
-    $form = $this->createFormBuilder($aw)
-        ->add('name', 'text')
-        ->add('place', 'text')
-        ->add('date', 'date')
-        ->add('idUser', 'integer')
-        ->add('create', 'submit')
-        ->getForm();
-
-    // TODO : we should not have the idUser in the form, this should be transparent
-    if($this->getUser() != null) {
-      $form->get('idUser')->setData($this->getUser()->getId());
-    }
-    else {
-
-    }
-
-    $form->handleRequest($request);
-
-    if ($form->isValid()) {
-        // Save in DB
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($aw);
-        $em->flush();
-        //TODO:FIX THE REDIRECT URL
-        //return $this->redirect($this->generateUrl('userSuccess'));
-    }
-
-    $em = $this->container->get('doctrine')->getEntityManager();
-    $qb = $em->createQueryBuilder();
-
-    $motcle = 'temple';
-
-    $qb->select('a')
-       ->from('AWBundle:aw', 'a')
-       ->where("a.place LIKE :motcle")
-       ->orderBy('a.place', 'ASC')
-       ->setParameter('motcle', '%'.$motcle.'%');
-
-    $query = $qb->getQuery();
-    $aw2 = $query->getResult();
-
-  //  return $this->render('AWBundle:Default:user.html.twig'
-
-  /*  $this->container->get('templating')->renderResponse('AWBundle:Default:listAw.html.twig', array(
-  		'aw' => $aw2,
-  		'formSearch' => $formSearch->createView()
-  	)); */
-
-    return $this->render('AWBundle:Default:aw.html.twig', array(
-      'aw' => $aw2,  'formSearch' => $formSearch->createView() ));
-
-  }
-
-
-  public function createAwAction2(Request $request) {
-
-    $aw = new aw();
-    $aw->setName('AwName');
-    $aw->setPlace('AwPlace');
-    $aw->setDate(new \DateTime('tomorrow'));
-
-    $form = $this->createFormBuilder($aw)
-        ->add('name', 'text')
-        ->add('place', 'text')
-        ->add('date', 'date')
-        ->add('create', 'submit')
-        ->getForm();
-
-    $form->handleRequest($request);
-
-    if ($form->isValid()) {
-        // Save in DB
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($aw);
-        $em->flush();
-        //TODO:FIX THE REDIRECT URL
-        //return $this->redirect($this->generateUrl('userSuccess'));
-    }
-
-    return $this->render('AWBundle:Default:createAw.html.twig', array(
-        'form' => $form->createView(),
-    ));
-  }
 
   public function showUserAction()
   {
@@ -220,7 +217,7 @@ public function showAwAction(Request $request) {
 
   }
 
-
+  /*TODO: IS THIS STILL NEEDED ? MIGht NEED TO REMOVE */
   public function indexAction(Request $request) {
 
     $form = $this->createFormBuilder()
@@ -255,6 +252,7 @@ public function showAwAction(Request $request) {
 
   }
 
+ /*TODO: IS THIS STILL NEEDED ? MIGht NEED TO REMOVE */
   public function createUserAction(Request $request)
   {
         $awuser = new awuser();
